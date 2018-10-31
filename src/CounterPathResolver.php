@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+namespace Counter;
+
 abstract class CounterPathResolver
 {
     /**
@@ -15,6 +17,12 @@ abstract class CounterPathResolver
     public function __construct(string $path)
     {
         $this->path = $path;
+        if (!is_dir($path)) {
+            mkdir($path, 0755);
+        }
+        if (!is_dir($this->getPartialsDir())) {
+            mkdir($this->getPartialsDir(), 0755);
+        }
     }
 
     /**
@@ -29,7 +37,7 @@ abstract class CounterPathResolver
     /**
      * @return string
      */
-    protected function getMainCounterName(): string
+    protected function getMainCounterPath(): string
     {
         return $this->path . DIRECTORY_SEPARATOR . "counter";
     }
@@ -56,6 +64,10 @@ abstract class CounterPathResolver
      */
     protected function openAndLockFile(string $path)
     {
+        if (!\file_exists($path)) {
+            file_put_contents($path, '0');
+        }
+
         $fp = fopen($path, "r+");
 
         if (!$fp || !flock($fp, LOCK_EX | LOCK_NB, $eWouldBlock) || $eWouldBlock) {
@@ -67,11 +79,12 @@ abstract class CounterPathResolver
 
     /**
      * @param $fp
+     * @param $path
      * @return int
      */
     protected function readIntFromFile($fp): int
     {
-        return (int)fread($fp, fstat($fp)['size']);
+        return (int)fread($fp, strlen(strval(PHP_INT_MAX)));
     }
 
     /**
@@ -81,6 +94,7 @@ abstract class CounterPathResolver
     protected function rewriteFile($fp, string $contents)
     {
         ftruncate($fp, 0);
+        rewind($fp);
         fwrite($fp, $contents);
     }
 

@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+namespace Counter;
+
 class SimpleCounter extends CounterPathResolver implements CounterInterface
 {
 
@@ -8,15 +10,7 @@ class SimpleCounter extends CounterPathResolver implements CounterInterface
      * @param int $index
      * @return int
      */
-    public function increment($index = 1): int
-    {
-        return $this->incrementFile();
-    }
-
-    /**
-     * @return int
-     */
-    private function incrementFile(): int
+    public function increment(): int
     {
         $index = 0;
 
@@ -27,11 +21,13 @@ class SimpleCounter extends CounterPathResolver implements CounterInterface
             $index++;
         }
 
+        echo ($index - 1) . '->';
         $counter = $this->readIntFromFile($fp);
         $counter++;
 
-        $this->rewriteFile($fp, (string)$counter);
+        $this->rewriteFile($fp, strval($counter));
 
+        $this->closeAndUnlockFile($fp);
 
         return $this->get() + $counter;
     }
@@ -41,6 +37,10 @@ class SimpleCounter extends CounterPathResolver implements CounterInterface
      */
     public function get(): int
     {
-        return (int)file_get_contents($this->getMainCounterName());
+        if (is_file($this->getMainCounterPath())) {
+            return (int)file_get_contents($this->getMainCounterPath());
+        }
+
+        return 0;
     }
 }

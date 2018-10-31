@@ -1,0 +1,18 @@
+{
+  "name": "greenplugin/file-counter",
+  "authors": [
+    {
+      "name": "greenplugin",
+      "email": "wformps@gmail.com"
+    }
+  ],
+  "require": {
+
+  },
+  "autoload": {
+    "psr-4": {
+      "Counter\\": "src/"
+    }
+  },
+  "license": "MIT"
+}
