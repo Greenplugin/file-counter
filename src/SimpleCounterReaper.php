@@ -27,5 +27,4 @@ class SimpleCounterReaper extends CounterPathResolver
 
         return $counter;
     }
-
 }

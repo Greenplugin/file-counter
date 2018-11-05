@@ -21,7 +21,6 @@ class SimpleCounter extends CounterPathResolver implements CounterInterface
             $index++;
         }
 
-        echo ($index - 1) . '->';
         $counter = $this->readIntFromFile($fp);
         $counter++;
 

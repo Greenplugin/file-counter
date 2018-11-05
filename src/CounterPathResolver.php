@@ -59,16 +59,12 @@ abstract class CounterPathResolver
     }
 
     /**
-     * @param $path
+     * @param string $path
      * @return bool|resource
      */
     protected function openAndLockFile(string $path)
     {
-        if (!\file_exists($path)) {
-            file_put_contents($path, '0');
-        }
-
-        $fp = fopen($path, "r+");
+        $fp = fopen($path, "c+");
 
         if (!$fp || !flock($fp, LOCK_EX | LOCK_NB, $eWouldBlock) || $eWouldBlock) {
             return false;
